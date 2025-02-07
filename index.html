@@ -1,22 +1,25 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Widget 3D</title>
+    <title>Widget 3D</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <!-- Conteneur pour le widget, correctement positionné en bas à gauche avec un z-index élevé -->
-    <div id="widget-container">
-        <!-- Lien vers https://www.hiramanga.com/home -->
-        <a href="https://www.hiramanga.com/home" id="widget-link">
-            <div id="widget"></div>
-        </a>
-    </div>
 
-    <!-- Chargement de Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+<!-- Texte flottant "Home" -->
+<div id="floating-text">Home</div>
+
+<!-- Conteneur pour le widget -->
+<div id="widget-container">
+    <a href="https://www.hiramanga.com/home" id="widget-link">
+        <div id="widget"></div>
+    </a>
+</div>
+
+<script src="javascript.js"></script>
+
 </body>
 </html>
