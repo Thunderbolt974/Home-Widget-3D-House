@@ -1,100 +1,70 @@
-// Assurer que le lien s'ouvre dans la même fenêtre
+// Redirection du lien
 document.getElementById("widget-link").addEventListener("click", function(event) {
     event.preventDefault();
     window.location.href = this.href;
 });
 
-// Création de la scène
+// Création de la scène Three.js
 var scene = new THREE.Scene();
 
-// Création de la caméra (centrée sur la maison)
+// Caméra
 var camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 camera.position.set(0.5, 0.5, 3.2);
 
-// Création du moteur de rendu
+// Rendu
 var renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(150, 150);
+renderer.shadowMap.enabled = true;
 document.getElementById('widget').appendChild(renderer.domElement);
 
-// Matériau de la maison (clair et transparent)
+// Matériaux
 var material = new THREE.MeshStandardMaterial({
-    color: 0xf8f8f8,  
-    transparent: true,  
-    opacity: 0.4,       
-    roughness: 0.1,     
-    metalness: 0.1      
+    color: 0x333333,
+    transparent: true,
+    opacity: 0.4,
+    roughness: 0.1,
+    metalness: 0.5
 });
 
-// Matériau pour le toit (rouge-brique transparent)
-var roofMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0xB22222,  
-    transparent: true, 
-    opacity: 0.6, 
-    roughness: 0.3, 
-    metalness: 0.2 
-});
+// Création du modèle d'appareil photo 3D
+var cameraModel = new THREE.Group();
 
-// Matériau pour les contours
-var edgeMaterial = new THREE.LineBasicMaterial({ color: 0x888888, linewidth: 2 });
+// Corps principal (boîtier)
+var bodyGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.5);
+var body = new THREE.Mesh(bodyGeometry, material);
+body.castShadow = true;
+body.receiveShadow = true;
+cameraModel.add(body);
 
-// **Groupe contenant toute la maison pour une rotation parfaite**
-var house = new THREE.Group();
+// Objectif (cylindre)
+var lensGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.6, 32);
+var lens = new THREE.Mesh(lensGeometry, material);
+lens.position.set(0, 0, 0.45);
+cameraModel.add(lens);
 
-// Corps de la maison (cube)
-var cubeSize = 1.1;
-var geometryCube = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-var cube = new THREE.Mesh(geometryCube, material);
-house.add(cube);
+// Ombre portée (sol)
+var groundGeometry = new THREE.PlaneGeometry(100, 100);
+var groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+var ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.6;
+ground.receiveShadow = true;
+scene.add(ground);
 
-// Arêtes visibles pour le cube
-var cubeEdges = new THREE.EdgesGeometry(geometryCube);
-var cubeLine = new THREE.LineSegments(cubeEdges, edgeMaterial);
-house.add(cubeLine);
-
-// Toit (pyramide aplatie avec base réduite)
-var pyramidHeight = 0.6;  
-var pyramidBase = 0.9;  
-var geometryPyramid = new THREE.ConeGeometry(pyramidBase, pyramidHeight, 4);
-geometryPyramid.rotateX(Math.PI / 0.5);
-var pyramid = new THREE.Mesh(geometryPyramid, roofMaterial);
-pyramid.position.y = cubeSize / 2 + pyramidHeight / 2;
-pyramid.rotation.y = 14.93;
-house.add(pyramid);
-
-// Ajout des arêtes visibles pour le toit
-var pyramidEdges = new THREE.EdgesGeometry(geometryPyramid);
-var pyramidLine = new THREE.LineSegments(pyramidEdges, edgeMaterial);
-pyramidLine.position.copy(pyramid.position);
-pyramidLine.rotation.copy(pyramid.rotation);
-house.add(pyramidLine);
-
-// Porte (fixée sur la face avant)
-var doorWidth = 0.3;
-var doorHeight = 0.7;
-var geometryDoor = new THREE.BoxGeometry(doorWidth, doorHeight, 0.01);
-var doorMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0xfffafa,  
-    transparent: true, 
-    opacity: 0.5, 
-    roughness: 0.3, 
-    metalness: 0.2 
-});
-var door = new THREE.Mesh(geometryDoor, doorMaterial);
-door.position.set(0, -0.25, cubeSize / 2 + 0.025);
-house.add(door);
-
-// **Ajout du groupe "house" à la scène**
-scene.add(house);
-
-// Ajout d'une lumière équilibrée
-var light = new THREE.PointLight(0xffffff, 0.8, 100);
-light.position.set(0, 2, 2);
+// Lumière
+var light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(2, 2, 2);
+light.target.position.set(0, 0, 0);
+light.castShadow = true;
 scene.add(light);
 
-// Animation (rotation autour de l'axe central)
+// Ajout de l'appareil photo à la scène
+scene.add(cameraModel);
+
+// Animation de rotation
 function animate() {
     requestAnimationFrame(animate);
-    house.rotation.y += 0.01;
+    cameraModel.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
 
