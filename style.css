@@ -1,0 +1,23 @@
+/* Conteneur pour le widget positionné en bas à gauche avec un z-index élevé */
+#widget-container {
+    position: fixed;
+    left: -20px;
+    bottom: -10px;
+    width: 150px;
+    height: 150px;
+    z-index: 9999;
+}
+
+/* Style du div qui contient le widget (il occupe toute la place du conteneur) */
+#widget {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+}
+
+/* Optionnel: Ajoute des styles de base pour ton HTML */
+body {
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+}
