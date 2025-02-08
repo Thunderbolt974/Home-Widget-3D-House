@@ -1,72 +1,67 @@
-// Redirection du lien
+// Assurer que le lien s'ouvre dans la même fenêtre
 document.getElementById("widget-link").addEventListener("click", function(event) {
     event.preventDefault();
     window.location.href = this.href;
 });
 
-// Création de la scène Three.js
+// Création de la scène
 var scene = new THREE.Scene();
-
-// Caméra
 var camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 camera.position.set(0.5, 0.5, 3.2);
 
-// Rendu
+// Création du moteur de rendu
 var renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(150, 150);
 renderer.shadowMap.enabled = true;
 document.getElementById('widget').appendChild(renderer.domElement);
 
-// Matériaux
+// Matériau de la maison
 var material = new THREE.MeshStandardMaterial({
-    color: 0x333333,
+    color: 0xf8f8f8,
     transparent: true,
     opacity: 0.4,
     roughness: 0.1,
-    metalness: 0.5
+    metalness: 0.1
 });
 
-// Création du modèle d'appareil photo 3D
-var cameraModel = new THREE.Group();
+// Contours
+var edgeMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
 
-// Corps principal (boîtier)
-var bodyGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.5);
-var body = new THREE.Mesh(bodyGeometry, material);
-body.castShadow = true;
-body.receiveShadow = true;
-cameraModel.add(body);
+// Création de l'appareil photo (cube représentant le boîtier)
+var camera3D = new THREE.Group();
+var cubeGeometry = new THREE.BoxGeometry(1.1, 0.7, 0.5);
+var cameraBody = new THREE.Mesh(cubeGeometry, material);
+cameraBody.castShadow = true;
+cameraBody.receiveShadow = true;
+camera3D.add(cameraBody);
 
-// Objectif (cylindre)
-var lensGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.6, 32);
-var lens = new THREE.Mesh(lensGeometry, material);
-lens.position.set(0, 0, 0.45);
-cameraModel.add(lens);
+// Ajout des arêtes du cube
+var cubeEdges = new THREE.EdgesGeometry(cubeGeometry);
+var cubeLine = new THREE.LineSegments(cubeEdges, edgeMaterial);
+camera3D.add(cubeLine);
 
-// Ombre portée (sol)
-var groundGeometry = new THREE.PlaneGeometry(100, 100);
-var groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
-var ground = new THREE.Mesh(groundGeometry, groundMaterial);
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -0.6;
-ground.receiveShadow = true;
-scene.add(ground);
+// Objectif (cylindre sur le devant)
+var lensGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.5, 32);
+var lensMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, transparent: true, opacity: 0.8 });
+var lens = new THREE.Mesh(lensGeometry, lensMaterial);
+lens.rotation.x = Math.PI / 2;
+lens.position.z = 0.5;
+camera3D.add(lens);
 
-// Lumière
+// Lumière et ombre
 var light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(2, 2, 2);
 light.target.position.set(0, 0, 0);
 light.castShadow = true;
 scene.add(light);
 
-// Ajout de l'appareil photo à la scène
-scene.add(cameraModel);
+// Ajout du modèle à la scène
+scene.add(camera3D);
 
-// Animation de rotation
+// Animation
 function animate() {
     requestAnimationFrame(animate);
-    cameraModel.rotation.y += 0.01;
+    camera3D.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
-
-// Démarrer l'animation
 animate();

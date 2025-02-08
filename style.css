@@ -4,7 +4,6 @@ body {
     height: 100vh;
 }
 
-/* Texte flottant "Home" */
 #floating-text {
     position: fixed;
     left: 10px;
@@ -17,7 +16,6 @@ body {
     font-family: Lato, sans-serif;
 }
 
-/* Conteneur du widget */
 #widget-container {
     position: fixed;
     left: -20px;
@@ -29,6 +27,11 @@ body {
 
 #widget-link {
     display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#widget {
     width: 100%;
     height: 100%;
 }
